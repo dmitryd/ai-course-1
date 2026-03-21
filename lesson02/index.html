@@ -370,6 +370,53 @@
       animation: smoke 6s ease-in-out infinite;
     }
 
+    .magic-sparkles,
+    .magic-sparkles::before,
+    .magic-sparkles::after {
+      position: absolute;
+      content: "";
+      pointer-events: none;
+    }
+
+    .magic-sparkles {
+      width: 250px;
+      height: 140px;
+      top: -96px;
+      left: 50%;
+      transform: translateX(-50%);
+      background:
+        radial-gradient(circle at 12% 72%, rgba(255,255,255,0.95) 0 2px, transparent 3px),
+        radial-gradient(circle at 26% 28%, rgba(255,229,143,0.9) 0 2px, transparent 3px),
+        radial-gradient(circle at 44% 62%, rgba(255,255,255,0.95) 0 1.8px, transparent 3px),
+        radial-gradient(circle at 58% 18%, rgba(255,207,64,0.95) 0 2.2px, transparent 3.2px),
+        radial-gradient(circle at 72% 56%, rgba(255,255,255,0.9) 0 2px, transparent 3px),
+        radial-gradient(circle at 88% 34%, rgba(255,229,143,0.95) 0 1.8px, transparent 3px);
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.85)) drop-shadow(0 0 18px rgba(255,207,64,0.55));
+      mix-blend-mode: screen;
+      animation: sparkleDrift 6s ease-in-out infinite, sparkleBlink 2.4s ease-in-out infinite;
+    }
+
+    .magic-sparkles::before {
+      inset: -12px 20px 10px;
+      background:
+        radial-gradient(circle at 18% 42%, rgba(255,255,255,0.9) 0 1.6px, transparent 2.6px),
+        radial-gradient(circle at 38% 86%, rgba(255,229,143,0.8) 0 1.4px, transparent 2.4px),
+        radial-gradient(circle at 62% 26%, rgba(255,255,255,0.85) 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 84% 74%, rgba(255,207,64,0.9) 0 1.6px, transparent 2.6px);
+      animation: sparkleBlink 1.8s ease-in-out infinite reverse;
+      opacity: 0.9;
+    }
+
+    .magic-sparkles::after {
+      inset: -6px 0 6px;
+      background:
+        radial-gradient(circle at 8% 30%, rgba(255,255,255,0.85) 0 1.2px, transparent 2.2px),
+        radial-gradient(circle at 48% 8%, rgba(255,229,143,0.95) 0 1.3px, transparent 2.2px),
+        radial-gradient(circle at 94% 50%, rgba(255,255,255,0.85) 0 1.2px, transparent 2.2px);
+      animation: sparkleBlink 2.1s ease-in-out infinite;
+      opacity: 0.75;
+    }
+
     .lamp-card {
       position: relative;
       border-radius: 28px;
@@ -656,6 +703,16 @@
       50% { transform: translateY(-14px) scale(1.18); opacity: 1; }
     }
 
+    @keyframes sparkleDrift {
+      0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+      50% { transform: translateX(-50%) translateY(-10px) scale(1.06); }
+    }
+
+    @keyframes sparkleBlink {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 1; }
+    }
+
     @media (max-width: 980px) {
       .hero-grid,
       .find-grid,
@@ -757,6 +814,7 @@
               <div class="genie-orb"></div>
             </div>
             <div class="magic-smoke"></div>
+            <div class="magic-sparkles" aria-hidden="true"></div>
             <div class="lamp-card">
               <img
                 src="genie.jpg"
