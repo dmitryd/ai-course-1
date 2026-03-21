@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Я – самый лучший в мире джинн!</title>
+  <style>
+    :root {
+      --blue: #0b5fff;
+      --blue-deep: #062b88;
+      --gold: #ffcf40;
+      --gold-soft: #ffe58f;
+      --orange: #ff7a18;
+      --dark: #06122f;
+      --light: #f7fbff;
+      --card: rgba(255,255,255,0.14);
+      --border: rgba(255,255,255,0.18);
+      --shadow: 0 20px 60px rgba(6, 18, 47, 0.28);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--light);
+      background: radial-gradient(circle at 30% 20%, rgba(0,120,255,0.18), transparent 35%), radial-gradient(circle at 80% 70%, rgba(0,80,200,0.22), transparent 40%), linear-gradient(160deg, #000a2a 0%, #001a55 40%, #003399 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatGlow 10s ease-in-out infinite;
+    }
+
+    body::before {
+      top: -120px;
+      left: -120px;
+      background: var(--gold);
+    }
+
+    body::after {
+      right: -120px;
+      bottom: -120px;
+      background: var(--orange);
+      animation-delay: -4s;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 10% 18%, rgba(255,255,255,0.9) 0 1px, transparent 2px),
+        radial-gradient(circle at 24% 72%, rgba(255,255,255,0.7) 0 1px, transparent 2px),
+        radial-gradient(circle at 42% 24%, rgba(255,255,255,0.9) 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 61% 12%, rgba(255,255,255,0.8) 0 1px, transparent 2px),
+        radial-gradient(circle at 77% 68%, rgba(255,255,255,0.85) 0 1.2px, transparent 2px),
+        radial-gradient(circle at 90% 34%, rgba(255,255,255,0.75) 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 88%, rgba(255,255,255,0.7) 0 1.4px, transparent 2px),
+        radial-gradient(circle at 16% 90%, rgba(255,255,255,0.7) 0 1px, transparent 2px);
+      opacity: 0.5;
+      animation: twinkle 6s linear infinite;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(6, 18, 47, 0.58);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .header-inner {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .logo {
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      color: white;
+      text-shadow: 0 0 18px rgba(255, 207, 64, 0.35);
+    }
+
+    .logo-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), var(--orange));
+      color: var(--dark);
+      box-shadow: 0 8px 24px rgba(255, 122, 24, 0.35);
+      font-size: 1.2rem;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .nav a {
+      padding: 11px 16px;
+      border-radius: 999px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: 0.25s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.18);
+      transform: translateY(-2px);
+    }
+
+    .hero {
+      padding: 72px 0 50px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-copy,
+    .hero-visual,
+    .glass-section {
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      border-radius: 32px;
+    }
+
+    .hero-copy {
+      padding: 42px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-copy::before {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,207,64,0.35), transparent 70%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--gold-soft);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(2.3rem, 5vw, 4.8rem);
+      line-height: 0.98;
+      margin-bottom: 18px;
+      max-width: 12ch;
+      text-wrap: balance;
+      text-shadow: 0 8px 28px rgba(0,0,0,0.2);
+    }
+
+    .hero-copy p {
+      font-size: 1.08rem;
+      color: rgba(255,255,255,0.9);
+      max-width: 58ch;
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn {
+      padding: 14px 20px;
+      border-radius: 16px;
+      font-weight: 700;
+      transition: 0.25s ease;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold), var(--orange));
+      color: var(--dark);
+      box-shadow: 0 16px 32px rgba(255, 122, 24, 0.28);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px) scale(1.01);
+    }
+
+    .hero-visual {
+      min-height: 540px;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .lamp-wrap {
+      position: relative;
+      width: min(100%, 420px);
+      animation: levitate 5s ease-in-out infinite;
+    }
+
+    
+
+    .genie-head {
+      width: 92px;
+      height: 92px;
+      top: 16px;
+      left: 74px;
+      box-shadow: 0 0 30px rgba(255,255,255,0.28), 0 0 60px rgba(11,95,255,0.35);
+    }
+
+    .genie-tail {
+      width: 180px;
+      height: 210px;
+      left: 30px;
+      top: 72px;
+      border-radius: 48% 52% 55% 45% / 36% 36% 64% 64%;
+      background: radial-gradient(circle at 40% 20%, rgba(255,255,255,0.9), rgba(255,207,64,0.48) 24%, rgba(11,95,255,0.55) 55%, transparent 82%);
+      filter: blur(6px);
+      animation: geniePulse 3.2s ease-in-out infinite;
+    }
+
+    .genie-orb {
+      width: 34px;
+      height: 34px;
+      top: 48px;
+      left: 12px;
+      opacity: 0.75;
+      animation: sparkleFloat 3.4s ease-in-out infinite;
+    }
+
+    .genie-orb::before,
+    .genie-orb::after {
+      content: "";
+      width: 22px;
+      height: 22px;
+      opacity: 0.8;
+    }
+
+    .genie-orb::before {
+      left: 182px;
+      top: 26px;
+      animation: sparkleFloat 3.8s ease-in-out infinite reverse;
+    }
+
+    .genie-orb::after {
+      left: 120px;
+      top: 180px;
+      width: 18px;
+      height: 18px;
+      animation: sparkleFloat 2.8s ease-in-out infinite;
+    }
+
+    .magic-smoke,
+    .magic-smoke::before,
+    .magic-smoke::after {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(16px);
+      background: radial-gradient(circle, rgba(255,255,255,0.75), rgba(255,207,64,0.32), transparent 72%);
+    }
+
+    .magic-smoke {
+      width: 220px;
+      height: 220px;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: smoke 4.5s ease-in-out infinite;
+    }
+
+    .magic-smoke::before {
+      content: "";
+      width: 150px;
+      height: 150px;
+      left: -70px;
+      top: 20px;
+      animation: smoke 5s ease-in-out infinite reverse;
+    }
+
+    .magic-smoke::after {
+      content: "";
+      width: 170px;
+      height: 170px;
+      right: -60px;
+      top: 30px;
+      animation: smoke 6s ease-in-out infinite;
+    }
+
+    .lamp-card {
+      position: relative;
+      border-radius: 28px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 25px 55px rgba(0,0,0,0.24);
+    }
+
+    .lamp-card img {
+      border-radius: 22px;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+
+    .hero-note {
+      position: absolute;
+      right: 8px;
+      bottom: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(6, 18, 47, 0.76);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 0.92rem;
+      max-width: 220px;
+    }
+
+    section {
+      padding: 30px 0 32px;
+    }
+
+    .glass-section {
+      padding: 34px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .section-head p {
+      max-width: 58ch;
+      color: rgba(255,255,255,0.82);
+    }
+
+    .conditions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .condition-card {
+      padding: 24px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+    }
+
+    .condition-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,207,64,0.4);
+    }
+
+    .condition-card span {
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, rgba(255,207,64,0.24), rgba(255,122,24,0.18));
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .condition-card h3 {
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .condition-card p {
+      color: rgba(255,255,255,0.84);
+      font-size: 0.98rem;
+    }
+
+    .resume-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .resume-card {
+      border-radius: 24px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+    }
+
+    .resume-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 22px 46px rgba(0,0,0,0.24);
+      border-color: rgba(255,207,64,0.35);
+    }
+
+    .resume-media {
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16 / 10;
+    }
+
+    .resume-media img {
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s ease;
+    }
+
+    .resume-card:hover .resume-media img {
+      transform: scale(1.08);
+    }
+
+    .resume-body {
+      padding: 20px 20px 22px;
+    }
+
+    .resume-tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gold-soft);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .resume-body h3 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .resume-body p {
+      color: rgba(255,255,255,0.82);
+      font-size: 0.96rem;
+    }
+
+    .find-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .find-card {
+      padding: 24px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .find-card p + p {
+      margin-top: 12px;
+    }
+
+    .market-photo {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 24px 44px rgba(0,0,0,0.22);
+    }
+
+    .market-photo img {
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+
+    .floating-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+      font-weight: 700;
+      margin-top: 18px;
+    }
+
+    .address {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,207,64,0.15), rgba(255,122,24,0.14));
+      border: 1px solid rgba(255,207,64,0.26);
+      color: #fff5cf;
+      font-weight: 600;
+    }
+
+    .footer {
+      padding: 28px 0 52px;
+      color: rgba(255,255,255,0.72);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer small {
+      display: inline-block;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px) scale(0.98);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+      will-change: opacity, transform;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .delay-1 { transition-delay: 0.08s; }
+    .delay-2 { transition-delay: 0.16s; }
+    .delay-3 { transition-delay: 0.24s; }
+    .delay-4 { transition-delay: 0.32s; }
+    .delay-5 { transition-delay: 0.4s; }
+
+    @keyframes levitate {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    @keyframes smoke {
+      0%, 100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 0.72; }
+      50% { transform: translateX(-50%) translateY(-18px) scale(1.08); opacity: 1; }
+    }
+
+    @keyframes floatGlow {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.08) translateY(12px); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 0.55; }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    
+      50% { transform: scale(1.06) rotate(4deg); }
+    }
+
+    @keyframes sparkleFloat {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+      50% { transform: translateY(-14px) scale(1.18); opacity: 1; }
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .find-grid,
+      .resume-grid,
+      .conditions-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        min-height: auto;
+      }
+
+      .header-inner {
+        padding: 14px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .hero {
+        padding-top: 42px;
+      }
+
+      .hero-copy,
+      .glass-section {
+        padding: 22px;
+        border-radius: 26px;
+      }
+
+      .hero-copy {
+        padding-top: 26px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .nav a {
+        padding: 10px 13px;
+        font-size: 0.9rem;
+      }
+
+      .hero-note {
+        position: static;
+        margin-top: 14px;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="#top">
+        <span class="logo-badge">🪔</span>
+        <span>Джинни из лампы</span>
+      </a>
+
+      <nav class="nav">
+        <a href="#conditions">Условия работы</a>
+        <a href="#resume">Резюме</a>
+        <a href="#find">Как найти джинна</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow">✨ Премиальный исполнитель желаний</div>
+          <h1>Я – самый лучший в мире джинн!</h1>
+          <p>
+            Живу в лампе, появляюсь эффектно, работаю быстро и исполняю желания так,
+            что о моих услугах потом слагают легенды, строят дворцы и переписывают историю.
+            Ярко. Стильно. Почти без последствий — если формулировать аккуратно.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#conditions">Узнать условия</a>
+            <a class="btn btn-secondary" href="#resume">Посмотреть резюме</a>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal delay-2">
+          <div class="lamp-wrap">
+                          <div class="genie-tail"></div>
+              <div class="genie-orb"></div>
+            </div>
+            <div class="magic-smoke"></div>
+            <div class="lamp-card">
+              <img
+                src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=900&q=80"
+                alt="Волшебная лампа джинна"
+              />
+            </div>
+          </div>
+          <div class="hero-note">
+            💫 Лучший результат получается у тех, кто умеет мечтать конкретно.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="conditions">
+      <div class="container glass-section">
+        <div class="section-head reveal">
+          <div>
+            <div class="eyebrow">📜 Правила магического сервиса</div>
+            <h2>Условия работы джинна</h2>
+          </div>
+          <p>
+            Перед использованием лампы рекомендуется внимательно прочитать договор оферты,
+            мысленно кивнуть и только потом переходить к потиранию артефакта.
+          </p>
+        </div>
+
+        <div class="conditions-grid">
+          <article class="condition-card reveal delay-1">
+            <span>🪔</span>
+            <h3>Способ вызова</h3>
+            <p>
+              Джинн вызывается потиранием лампы. Да, именно так. Не потиранием, не просьбами,
+              не звонком на горячую линию, а торжественным потиранием магического предмета.
+            </p>
+          </article>
+
+          <article class="condition-card reveal delay-2">
+            <span>3️⃣</span>
+            <h3>Лимит желаний</h3>
+            <p>
+              Исполняются только три желания. После третьего желания джинн исчезает,
+              оставляя приятное свечение, философские вопросы и, возможно, новый дворец.
+            </p>
+          </article>
+
+          <article class="condition-card reveal delay-3">
+            <span>🌠</span>
+            <h3>Допустимые формулировки</h3>
+            <p>
+              Желания могут быть любыми: от бессмысленного «хочу, чтобы все сапоги в мире
+              скрипели в до мажоре» до невероятного «хочу город из мрамора, куполов и садов,
+              видимый с луны». Масштаб не ограничен, фантазия приветствуется.
+            </p>
+          </article>
+
+          <article class="condition-card reveal delay-4">
+            <span>🧠</span>
+            <h3>Трактовка деталей</h3>
+            <p>
+              Всё, что не упомянуто заказчиком, джинн трактует по своему усмотрению. Хотите
+              богатство — уточняйте валюту, эпоху, объём, правовой статус и отсутствие драконов.
+            </p>
+          </article>
+
+          <article class="condition-card reveal delay-5">
+            <span>↩️</span>
+            <h3>Отмена и корректировки</h3>
+            <p>
+              Отмена результата, исправление побочных эффектов или уточнение уже исполненного
+              желания — это тоже отдельное желание и оно входит в лимит трёх доступных.
+            </p>
+          </article>
+
+          <article class="condition-card reveal delay-3">
+            <span>✨</span>
+            <h3>Рекомендация от мастера</h3>
+            <p>
+              Чем точнее формулировка, тем изящнее чудо. Чем туманнее формулировка, тем больше
+              художественного участия со стороны джинна.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="resume">
+      <div class="container glass-section">
+        <div class="section-head reveal">
+          <div>
+            <div class="eyebrow">🏛️ Магическое портфолио</div>
+            <h2>Резюме Джинни</h2>
+          </div>
+          <p>
+            За века работы я успел поучаствовать в самых амбициозных проектах человечества.
+            Официально это «исторические события» и «великие сооружения». Неофициально — отлично
+            сформулированные желания клиентов.
+          </p>
+        </div>
+
+        <div class="resume-grid">
+          <article class="resume-card reveal delay-1">
+            <div class="resume-media">
+              <img src="https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80" alt="Пирамиды Египта" />
+            </div>
+            <div class="resume-body">
+              <div class="resume-tag">Древний Египет</div>
+              <h3>Пирамиды Гизы</h3>
+              <p>
+                Клиент пожелал «памятник на века, чтобы все ахнули». Результат — комплекс,
+                который до сих пор вызывает восхищение, споры и бесконечные экскурсии.
+              </p>
+            </div>
+          </article>
+
+          <article class="resume-card reveal delay-2">
+            <div class="resume-media">
+              <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80" alt="Колизей в Риме" />
+            </div>
+            <div class="resume-body">
+              <div class="resume-tag">Римская империя</div>
+              <h3>Колизей</h3>
+              <p>
+                Один влиятельный заказчик мечтал о месте, где зрелищ будет больше, чем здравого
+                смысла. Я добавил масштаб, драму и безупречную архитектурную подачу.
+              </p>
+            </div>
+          </article>
+
+          <article class="resume-card reveal delay-3">
+            <div class="resume-media">
+              <img src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80" alt="Тадж-Махал" />
+            </div>
+            <div class="resume-body">
+              <div class="resume-tag">Империя Великих Моголов</div>
+              <h3>Тадж-Махал</h3>
+              <p>
+                Желание звучало как «создай величайшее признание в любви». Получился шедевр,
+                в котором романтика встретилась с белым мрамором и идеальной симметрией.
+              </p>
+            </div>
+          </article>
+
+          <article class="resume-card reveal delay-4">
+            <div class="resume-media">
+              <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80" alt="Нью-Йоркские небоскрёбы" />
+            </div>
+            <div class="resume-body">
+              <div class="resume-tag">Новое время</div>
+              <h3>Небоскрёбы Манхэттена</h3>
+              <p>
+                Заказчик хотел «город, который всем покажет, что возможно всё». Я усилил амбиции,
+                вертикаль и сияние — получилось узнаваемо и очень прибыльно.
+              </p>
+            </div>
+          </article>
+
+          <article class="resume-card reveal delay-5">
+            <div class="resume-media">
+              <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80" alt="Высадка на Луну" />
+            </div>
+            <div class="resume-body">
+              <div class="resume-tag">Космическая эра</div>
+              <h3>Высадка человека на Луну</h3>
+              <p>
+                Один очень настойчивый клиент пожелал «оставить след там, где никто не был».
+                Я помог с невозможным — и человечество получило свой самый эффектный шаг.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="find">
+      <div class="container glass-section">
+        <div class="section-head reveal">
+          <div>
+            <div class="eyebrow">🧭 Маршрут к чуду</div>
+            <h2>Как найти джинна</h2>
+          </div>
+          <p>
+            Наиболее вероятная точка поиска — центральный базар Стамбула, особенно лавки с лампами,
+            латунью, загадочными продавцами и слишком красивыми обещаниями.
+          </p>
+        </div>
+
+        <div class="find-grid">
+          <div class="market-photo reveal delay-1">
+            <img src="https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=1200&q=80" alt="Типичная лампа джинна на восточном базаре" />
+          </div>
+
+          <div class="find-card reveal delay-2">
+            <p>
+              Лучше всего искать Джинни на <strong>центральном базаре Стамбула</strong> в рядах,
+              где продаются лампы, восточные светильники и старинные металлические сосуды.
+              Именно там чаще всего встречаются экземпляры с характерной магической энергетикой.
+            </p>
+            <p>
+              Выбирайте лампу с выраженным характером: изогнутый носик, богатый орнамент,
+              немного подозрительное сияние и ощущение, что она знает о вас слишком много.
+            </p>
+            <p>
+              После обнаружения подходящей лампы действуйте смело, но помните о правилах вызова,
+              лимите желаний и необходимости очень аккуратно формулировать каждую просьбу.
+            </p>
+
+            <div class="floating-chip">🛍️ Лучшее место поиска: лавки с лампами</div>
+
+            <div class="address">
+              Адрес базара: <strong>Grand Bazaar (Kapalıçarşı), Beyazıt, 34126 Fatih/İstanbul, Türkiye</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <small>© Джинни из лампы — исполняю желания, но формулировки запоминаю буквально.</small>
+    </div>
+  </footer>
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, {
+      threshold: 0.16,
+      rootMargin: '0px 0px -8% 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>
