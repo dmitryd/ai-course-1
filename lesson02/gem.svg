@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="gemMain" x1="4" y1="6" x2="28" y2="26" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7b4dff"/>
+      <stop offset="0.5" stop-color="#38b6ff"/>
+      <stop offset="1" stop-color="#ffd84d"/>
+    </linearGradient>
+    <linearGradient id="gemFacet" x1="8" y1="8" x2="24" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M8 6H24L29 13L16 28L3 13L8 6Z" fill="url(#gemMain)"/>
+  <path d="M8 6L12 13H3L8 6Z" fill="#a88bff" fill-opacity="0.7"/>
+  <path d="M24 6L29 13H20L24 6Z" fill="#7ad4ff" fill-opacity="0.75"/>
+  <path d="M12 13H20L16 28L12 13Z" fill="#fff2b2" fill-opacity="0.35"/>
+  <path d="M9 8H23L25.5 12.5L16 24L6.5 12.5L9 8Z" fill="url(#gemFacet)"/>
+</svg>
