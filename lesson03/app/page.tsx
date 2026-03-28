@@ -24,7 +24,7 @@ export default function Home() {
       <form onSubmit={handleSubmit} className="w-full max-w-xl flex flex-col gap-4">
         <Input
           type="url"
-          placeholder="Paste YouTube video URL"
+          placeholder="Вставьте ссылку на видео YouTube"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           className="h-12 text-base"
@@ -35,7 +35,7 @@ export default function Home() {
           className="h-12 text-base"
           disabled={isLoading || !url.trim()}
         >
-          {isLoading ? "Loading..." : "Summarize"}
+          {isLoading ? "Загрузка..." : "Сделать краткое содержание"}
         </Button>
       </form>
     </main>

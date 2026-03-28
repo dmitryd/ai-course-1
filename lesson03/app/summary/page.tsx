@@ -93,7 +93,7 @@ function SummaryContent() {
         return
       }
 
-      throw new Error(data.error.message || "Failed to summarize video")
+      throw new Error(data.error.message || "Не удалось подготовить краткое содержание видео")
     }
   }
 
@@ -131,7 +131,7 @@ function SummaryContent() {
       return
     }
 
-    throw new Error(data.status === "error" ? data.error.message : "Failed to summarize video")
+    throw new Error(data.status === "error" ? data.error.message : "Не удалось подготовить краткое содержание видео")
   }
 
   useEffect(() => {
@@ -151,7 +151,7 @@ function SummaryContent() {
         return
       }
 
-      setError(err instanceof Error ? err.message : "Something went wrong")
+      setError(err instanceof Error ? err.message : "Что-то пошло не так")
       setStatus("error")
     })
 
@@ -166,7 +166,7 @@ function SummaryContent() {
       <main className="min-h-screen flex flex-col items-center justify-center bg-background px-4 gap-4">
         <p className="text-destructive text-center">{error}</p>
         <Button onClick={() => router.push("/")} variant="outline">
-          Try another video
+          Попробовать другое видео
         </Button>
       </main>
     )
@@ -194,7 +194,7 @@ function SummaryContent() {
               variant="outline"
               className="self-start"
             >
-              Summarize another video
+              Сделать краткое содержание другого видео
             </Button>
           </>
         )}
