@@ -2,7 +2,7 @@ import { ZodError } from "zod"
 
 import { AppError, createErrorResponse, toResponseInit } from "@/lib/errors"
 import { getServerEnv } from "@/lib/env"
-import { summarizeTranscriptInRussian } from "@/lib/gemini"
+import { summarizeTranscriptInRussianCached } from "@/lib/gemini"
 import { verifyJobToken } from "@/lib/job-token"
 import { summarizeStatusRequestSchema } from "@/lib/summarize-schema"
 import { getTranscriptJob } from "@/lib/supadata"
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       })
     }
 
-    const summary = await summarizeTranscriptInRussian(transcriptResult.content)
+    const summary = await summarizeTranscriptInRussianCached(transcriptResult.content, payload.jobId)
 
     return Response.json({
       status: "completed",

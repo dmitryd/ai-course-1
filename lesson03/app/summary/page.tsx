@@ -22,6 +22,32 @@ type SummaryApiResponse =
       }
     }
 
+function isAbortError(error: unknown) {
+  return error instanceof DOMException && error.name === "AbortError"
+}
+
+function sleep(ms: number, signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      signal.removeEventListener("abort", onAbort)
+      resolve()
+    }, ms)
+
+    function onAbort() {
+      window.clearTimeout(timeoutId)
+      signal.removeEventListener("abort", onAbort)
+      reject(new DOMException("The operation was aborted.", "AbortError"))
+    }
+
+    if (signal.aborted) {
+      onAbort()
+      return
+    }
+
+    signal.addEventListener("abort", onAbort)
+  })
+}
+
 function SummaryContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -31,26 +57,39 @@ function SummaryContent() {
   const [status, setStatus] = useState<SummaryStatus>("starting")
   const [error, setError] = useState("")
 
-  async function pollSummaryStatus(jobToken: string) {
+  async function pollSummaryStatus(jobToken: string, signal: AbortSignal, isCancelled: () => boolean) {
     while (true) {
-      await new Promise((resolve) => window.setTimeout(resolve, 1000))
+      await sleep(1000, signal)
+
+      if (signal.aborted || isCancelled()) {
+        return
+      }
 
       const response = await fetch("/api/summarize/status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobToken }),
+        signal,
       })
+
+      if (signal.aborted || isCancelled()) {
+        return
+      }
 
       const data = (await response.json()) as SummaryApiResponse
 
       if (data.status === "processing") {
-        setStatus("processing")
+        if (!isCancelled()) {
+          setStatus("processing")
+        }
         continue
       }
 
       if (data.status === "completed") {
-        setSummary(data.summary)
-        setStatus("completed")
+        if (!isCancelled()) {
+          setSummary(data.summary)
+          setStatus("completed")
+        }
         return
       }
 
@@ -58,26 +97,37 @@ function SummaryContent() {
     }
   }
 
-  async function startSummaryFlow(videoUrl: string) {
-    setStatus("starting")
+  async function startSummaryFlow(videoUrl: string, signal: AbortSignal, isCancelled: () => boolean) {
+    if (!isCancelled()) {
+      setStatus("starting")
+    }
 
     const response = await fetch("/api/summarize/start", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url: videoUrl }),
+      signal,
     })
+
+    if (signal.aborted || isCancelled()) {
+      return
+    }
 
     const data = (await response.json()) as SummaryApiResponse
 
     if (data.status === "completed") {
-      setSummary(data.summary)
-      setStatus("completed")
+      if (!isCancelled()) {
+        setSummary(data.summary)
+        setStatus("completed")
+      }
       return
     }
 
     if (data.status === "processing" && data.jobToken) {
-      setStatus("processing")
-      await pollSummaryStatus(data.jobToken)
+      if (!isCancelled()) {
+        setStatus("processing")
+      }
+      await pollSummaryStatus(data.jobToken, signal, isCancelled)
       return
     }
 
@@ -85,15 +135,30 @@ function SummaryContent() {
   }
 
   useEffect(() => {
+    const abortController = new AbortController()
+    let cancelled = false
+
     if (!url) {
       router.push("/")
-      return
+      return () => {
+        cancelled = true
+        abortController.abort()
+      }
     }
 
-    startSummaryFlow(decodeURIComponent(url)).catch((err: unknown) => {
+    startSummaryFlow(decodeURIComponent(url), abortController.signal, () => cancelled).catch((err: unknown) => {
+      if (cancelled || isAbortError(err)) {
+        return
+      }
+
       setError(err instanceof Error ? err.message : "Something went wrong")
       setStatus("error")
     })
+
+    return () => {
+      cancelled = true
+      abortController.abort()
+    }
   }, [url, router])
 
   if (error) {

@@ -3,6 +3,12 @@ import { getServerEnv } from "@/lib/env"
 
 const GEMINI_MODEL = "gemini-3.1-flash-lite-preview"
 const MAX_TRANSCRIPT_CHARS = 30000
+const SUMMARY_CACHE_TTL_MS = 10 * 60 * 1000
+
+type SummaryCacheEntry = {
+  expiresAt: number
+  promise: Promise<string>
+}
 
 type GeminiResponse = {
   candidates?: Array<{
@@ -12,6 +18,16 @@ type GeminiResponse = {
       }>
     }
   }>
+}
+
+const summaryCache = new Map<string, SummaryCacheEntry>()
+
+function pruneSummaryCache(now: number) {
+  for (const [key, entry] of summaryCache.entries()) {
+    if (entry.expiresAt <= now) {
+      summaryCache.delete(key)
+    }
+  }
 }
 
 function buildPrompt(transcript: string) {
@@ -74,4 +90,26 @@ export async function summarizeTranscriptInRussian(transcript: string) {
   }
 
   return summary
+}
+
+export async function summarizeTranscriptInRussianCached(transcript: string, cacheKey: string) {
+  const now = Date.now()
+  pruneSummaryCache(now)
+
+  const cachedEntry = summaryCache.get(cacheKey)
+  if (cachedEntry && cachedEntry.expiresAt > now) {
+    return cachedEntry.promise
+  }
+
+  const promise = summarizeTranscriptInRussian(transcript).catch((error) => {
+    summaryCache.delete(cacheKey)
+    throw error
+  })
+
+  summaryCache.set(cacheKey, {
+    expiresAt: now + SUMMARY_CACHE_TTL_MS,
+    promise,
+  })
+
+  return promise
 }
