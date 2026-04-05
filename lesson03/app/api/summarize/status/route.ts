@@ -1,11 +1,13 @@
 import { ZodError } from "zod"
 
 import { AppError, createErrorResponse, toResponseInit } from "@/lib/errors"
+import { requireAuthenticatedUser } from "@/lib/credits"
 import { getServerEnv } from "@/lib/env"
 import { summarizeTranscriptInRussianCached } from "@/lib/gemini"
 import { verifyJobToken } from "@/lib/job-token"
 import { summarizeStatusRequestSchema } from "@/lib/summarize-schema"
 import { getTranscriptJob } from "@/lib/supadata"
+import { createSupabaseServerClient } from "@/lib/supabase/server"
 
 const SUPADATA_JOB_TTL_MS = 60 * 60 * 1000
 
@@ -26,9 +28,16 @@ function toRouteError(error: unknown) {
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createSupabaseServerClient()
+    const user = await requireAuthenticatedUser(supabase)
     const body = summarizeStatusRequestSchema.parse(await request.json())
     const { appJobTokenSecret } = getServerEnv()
     const payload = verifyJobToken(body.jobToken, appJobTokenSecret)
+
+    if (payload.userId !== user.id) {
+      throw new AppError("INVALID_JOB_TOKEN", 400, "The processing token does not belong to the current user.")
+    }
+
     const createdAt = new Date(payload.createdAt).getTime()
 
     if (!Number.isFinite(createdAt) || Date.now() - createdAt > SUPADATA_JOB_TTL_MS) {

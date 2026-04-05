@@ -1,56 +1,65 @@
 # YouTube Video Summarizer
 
-This app accepts a YouTube URL, fetches the transcript through Supadata, summarizes the video with Gemini, and returns the summary in Russian.
+Приложение принимает ссылку на YouTube, получает расшифровку через Supadata, собирает краткое содержание через Gemini и теперь работает только для авторизованных пользователей с кредитами в Supabase.
 
-## Required API Keys
+## Что добавлено
 
-Create [`.env.local`](.env.local) in the project root with:
+- Регистрация и вход по `email + password` через Supabase Auth.
+- Автоматическое начисление `5` кредитов при первой регистрации.
+- Показ текущего баланса и кнопка выхода в интерфейсе.
+- Списание `1` кредита за запуск обработки одного видео.
+- Временное пополнение до `5` кредитов при повторном входе, если баланс уже пустой.
+
+Временное пополнение выделено отдельными блоками с маркерами `TEMPORARY LOGIN REFILL`:
+
+- `lib/credits.ts`
+- `app/api/auth/login-bootstrap/route.ts`
+- `supabase/migrations/20260405173000_auth_and_credits.sql`
+
+## Переменные окружения
+
+Создайте [`.env.local`](.env.local) в корне проекта:
 
 ```dotenv
 SUPADATA_API_KEY=your_supadata_api_key_here
 GEMINI_API_KEY=your_gemini_api_key_here
 APP_JOB_TOKEN_SECRET=replace_with_a_long_random_secret
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
-- `SUPADATA_API_KEY` is used only by server routes to fetch transcripts.
-- `GEMINI_API_KEY` is used only by server routes to generate the summary in Russian.
-- `APP_JOB_TOKEN_SECRET` is your own random secret used to sign the temporary polling token.
+## Настройка Supabase
 
-Do not put any of these values in client components or commit them to git.
+1. Создайте Supabase project.
+2. Отключите подтверждение email: `Authentication -> Providers -> Email -> Confirm email`.
+3. Примените SQL-миграцию из `supabase/migrations/20260405173000_auth_and_credits.sql` через Supabase SQL Editor, CLI или MCP.
+4. Скопируйте `Project URL` и `anon public key` в `.env.local`.
 
-## Local Testing
+Миграция создает:
 
-1. Copy [`.env.example`](.env.example) to [`.env.local`](.env.local).
-2. Fill in your real API keys.
-3. Run [`npm install`](package.json).
-4. Run [`npm run dev`](package.json).
-5. Open `http://localhost:3000`.
-6. Test with `https://www.youtube.com/watch?v=qim8chAy7Mw`.
+- таблицу `public.user_credits`
+- триггер на `auth.users` для стартовых 5 кредитов
+- функции `ensure_user_credits`, `consume_credit`
+- временную функцию `temporarily_refill_credits_on_login_if_empty`
 
-## Vercel Deployment Setup
+## Локальный запуск
 
-Vercel does not read your local [`.env.local`](.env.local) file. For deployment, add the same variables in the Vercel project settings.
+1. Скопируйте [`.env.example`](.env.example) в [`.env.local`](.env.local).
+2. Заполните ключи Supadata, Gemini и Supabase.
+3. Выполните `npm install`.
+4. Выполните `npm run dev`.
+5. Откройте `http://localhost:3000`.
 
-1. Open your project in the Vercel dashboard.
-2. Click **Settings**.
-3. In the left sidebar, open **Environment Variables**.
-4. Add a variable named `SUPADATA_API_KEY` and paste your Supadata key.
-5. Add a variable named `GEMINI_API_KEY` and paste your Gemini key.
-6. Add a variable named `APP_JOB_TOKEN_SECRET` and paste a long random string.
-7. For each variable, choose the environments where it should be available. At minimum, select **Production**. Select **Preview** too if you want preview deployments to work.
-8. Save the variables.
-9. Redeploy the project so the new values are available to the server routes.
-10. After redeploy, submit a YouTube URL through the app and confirm the summary appears.
+## Тесты
 
-## How the Backend Works
+- Запуск всех тестов: `npm test`
+- Линтинг: `npm run lint`
 
-- The frontend starts the workflow through [`app/api/summarize/start/route.ts`](app/api/summarize/start/route.ts).
-- If Supadata returns a transcript immediately, the backend sends it to Gemini and returns the Russian summary.
-- If Supadata returns an async job, the backend returns a signed job token.
-- The frontend polls [`app/api/summarize/status/route.ts`](app/api/summarize/status/route.ts) until the summary is ready.
+## Что важно для дальнейшего удаления временного поведения
 
-## Known Limits
+Чтобы убрать пополнение кредитов при повторном входе позже, достаточно:
 
-- Very long videos may stay in the processing state while Supadata completes asynchronous transcription.
-- The first version summarizes transcript text only and does not enrich the result with advanced metadata.
-- Production requires Vercel Environment Variables even if local [`.env.local`](.env.local) works.
+1. удалить вызов и helper `applyTemporaryLoginCreditRefill` из `lib/credits.ts`
+2. удалить маршрут `app/api/auth/login-bootstrap/route.ts`
+3. убрать вызов `/api/auth/login-bootstrap` из `components/providers/auth-provider.tsx`
+4. удалить SQL-блок `TEMPORARY LOGIN REFILL` из `supabase/migrations/20260405173000_auth_and_credits.sql`

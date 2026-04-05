@@ -6,6 +6,7 @@ export type JobTokenPayload = {
   version: 1
   jobId: string
   sourceUrl: string
+  userId: string
   createdAt: string
 }
 

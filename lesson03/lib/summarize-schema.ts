@@ -22,12 +22,14 @@ export const summarizeErrorSchema = z.object({
 export const summarizeProcessingResponseSchema = z.object({
   status: z.literal("processing"),
   jobToken: z.string().optional(),
+  remainingCredits: z.number().int().nonnegative().optional(),
 })
 
 export const summarizeCompletedResponseSchema = z.object({
   status: z.literal("completed"),
   summary: z.string(),
   meta: summarizeMetaSchema.optional(),
+  remainingCredits: z.number().int().nonnegative().optional(),
 })
 
 export const summarizeErrorResponseSchema = z.object({
